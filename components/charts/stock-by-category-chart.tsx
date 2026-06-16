@@ -13,6 +13,19 @@ import {
 import { formatCompactNumber, formatNumber } from "@/lib/utils";
 import type { CategoryStockDatum } from "@/types";
 
+function toNumber(value: unknown) {
+  if (typeof value === "number") {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return toNumber(value[0]);
+  }
+
+  const parsed = Number(value ?? 0);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 export function StockByCategoryChart({ data }: { data: CategoryStockDatum[] }) {
   return (
     <div className="px-1 py-2">
@@ -34,7 +47,7 @@ export function StockByCategoryChart({ data }: { data: CategoryStockDatum[] }) {
               tick={{ fill: "var(--text-muted)", fontSize: 11 }}
               axisLine={false}
               tickLine={false}
-              tickFormatter={(value: number) => formatCompactNumber(value)}
+              tickFormatter={(value) => formatCompactNumber(toNumber(value))}
             />
           <Tooltip
               contentStyle={{
@@ -43,7 +56,7 @@ export function StockByCategoryChart({ data }: { data: CategoryStockDatum[] }) {
                 borderRadius: 6,
                 boxShadow: "0 4px 16px rgba(0,0,0,0.24)",
               }}
-              formatter={(value: number) => [formatNumber(value), "Stock"]}
+              formatter={(value) => [formatNumber(toNumber(value)), "Stock"]}
             />
             <Bar dataKey="stock" fill="var(--accent)" radius={[6, 6, 0, 0]} />
           </BarChart>

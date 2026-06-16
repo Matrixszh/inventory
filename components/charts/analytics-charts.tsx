@@ -14,6 +14,19 @@ import {
 
 import { formatCompactCurrency, formatCompactNumber, formatCurrency, formatNumber } from "@/lib/utils";
 
+function toNumber(value: unknown) {
+  if (typeof value === "number") {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return toNumber(value[0]);
+  }
+
+  const parsed = Number(value ?? 0);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 export function StockValueAreaChart({ data }: { data: Array<{ date: string; value: number }> }) {
   return (
     <div className="px-1 py-2">
@@ -38,7 +51,7 @@ export function StockValueAreaChart({ data }: { data: Array<{ date: string; valu
               axisLine={false}
               tickLine={false}
             tick={{ fill: "var(--text-muted)", fontSize: 11 }}
-            tickFormatter={(value: number) => formatCompactCurrency(value)}
+            tickFormatter={(value) => formatCompactCurrency(toNumber(value))}
             width={92}
           />
           <Tooltip
@@ -48,8 +61,8 @@ export function StockValueAreaChart({ data }: { data: Array<{ date: string; valu
               borderRadius: 6,
               boxShadow: "0 4px 16px rgba(0,0,0,0.24)",
             }}
-            formatter={(value: number) => [formatCurrency(value), "Stock Value"]}
-            labelFormatter={(label: string) => `Date: ${label}`}
+            formatter={(value) => [formatCurrency(toNumber(value)), "Stock Value"]}
+            labelFormatter={(label) => `Date: ${String(label ?? "")}`}
           />
             <Area type="monotone" dataKey="value" stroke="var(--accent)" fill="color-mix(in srgb, var(--accent) 18%, transparent)" />
           </AreaChart>
@@ -81,7 +94,7 @@ export function TopMovedItemsChart({
               axisLine={false}
               tickLine={false}
             tick={{ fill: "var(--text-muted)", fontSize: 11 }}
-            tickFormatter={(value: number) => formatCompactNumber(value)}
+            tickFormatter={(value) => formatCompactNumber(toNumber(value))}
           />
           <YAxis
             dataKey="itemName"
@@ -99,7 +112,7 @@ export function TopMovedItemsChart({
               borderRadius: 6,
               boxShadow: "0 4px 16px rgba(0,0,0,0.24)",
             }}
-            formatter={(value: number) => [formatNumber(value), "Movements"]}
+            formatter={(value) => [formatNumber(toNumber(value)), "Movements"]}
           />
             <Bar dataKey="movementCount" fill="var(--accent)" radius={[0, 6, 6, 0]} />
           </BarChart>
