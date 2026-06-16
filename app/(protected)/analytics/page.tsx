@@ -1,17 +1,65 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 import { Header } from "@/components/layout/header";
 import { StockValueAreaChart, TopMovedItemsChart } from "@/components/charts/analytics-charts";
 import { getAnalyticsData } from "@/lib/firestore";
 import { formatDateTime, formatNumber } from "@/lib/utils";
+import type { AnalyticsSnapshot } from "@/types";
 
-export default async function AnalyticsPage() {
-  const analyticsResult = await getAnalyticsData()
-    .then((analytics) => ({ analytics, error: null }))
-    .catch((error: unknown) => ({
-      analytics: null,
-      error: error instanceof Error ? error.message : "Unable to load analytics data.",
-    }));
+export default function AnalyticsPage() {
+  const [analytics, setAnalytics] = useState<AnalyticsSnapshot | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (analyticsResult.analytics) {
+  useEffect(() => {
+    let active = true;
+
+    void getAnalyticsData()
+      .then((result) => {
+        if (!active) {
+          return;
+        }
+
+        setAnalytics(result);
+        setError(null);
+      })
+      .catch((caughtError: unknown) => {
+        if (!active) {
+          return;
+        }
+
+        setError(
+          caughtError instanceof Error ? caughtError.message : "Unable to load analytics data.",
+        );
+      })
+      .finally(() => {
+        if (active) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <Header
+          title="Analytics"
+          description="Track valuation trends, movement leaders, dead stock, and supplier performance."
+        />
+        <div className="rounded-2xl border border-white/10 bg-[#252836] p-5 text-sm text-slate-400">
+          Loading analytics...
+        </div>
+      </div>
+    );
+  }
+
+  if (analytics) {
     return (
       <div className="space-y-8">
         <Header
@@ -20,8 +68,8 @@ export default async function AnalyticsPage() {
         />
 
         <section className="grid gap-6 xl:grid-cols-2">
-          <StockValueAreaChart data={analyticsResult.analytics.stockValueOverTime} />
-          <TopMovedItemsChart data={analyticsResult.analytics.topMovedItems} />
+          <StockValueAreaChart data={analytics.stockValueOverTime} />
+          <TopMovedItemsChart data={analytics.topMovedItems} />
         </section>
 
         <section className="grid gap-6 xl:grid-cols-2">
@@ -29,7 +77,7 @@ export default async function AnalyticsPage() {
             title="Dead Stock Report"
             emptyMessage="No dead stock items."
             headers={["Item", "SKU", "Current Stock", "Location"]}
-            rows={analyticsResult.analytics.deadStockItems.map((item) => [
+            rows={analytics.deadStockItems.map((item) => [
               item.name,
               item.sku,
               String(item.currentStock),
@@ -41,7 +89,7 @@ export default async function AnalyticsPage() {
             title="Supplier Performance"
             emptyMessage="No supplier performance data."
             headers={["Supplier", "Avg Delivery Qty", "Frequency", "Last Delivery"]}
-            rows={analyticsResult.analytics.supplierPerformance.map((supplier) => [
+            rows={analytics.supplierPerformance.map((supplier) => [
               supplier.supplierName,
               formatNumber(supplier.averageDeliveryQty),
               formatNumber(supplier.deliveryFrequency),
@@ -60,7 +108,7 @@ export default async function AnalyticsPage() {
         description="Track valuation trends, movement leaders, dead stock, and supplier performance."
       />
       <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-5 text-sm text-red-200">
-        {analyticsResult.error}
+        {error}
       </div>
     </div>
   );

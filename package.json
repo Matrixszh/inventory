@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "seed:dummy": "node scripts/seed-dummy-data.mjs",
+    "seed:dummy:clear": "node scripts/clear-dummy-data.mjs"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^2.0.12",
@@ -15,19 +17,21 @@
     "@anthropic-ai/sdk": "^0.62.0",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-dialog": "^1.1.15",
+    "@tabler/icons-react": "^3.44.0",
     "ai": "^5.0.98",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "firebase": "^12.5.0",
     "fuse.js": "^7.1.0",
     "lucide-react": "^0.552.0",
+    "motion": "^12.40.0",
     "next": "16.2.9",
     "pdf-lib": "^1.17.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.62.0",
     "recharts": "^3.3.0",
-    "tailwind-merge": "^3.3.1",
+    "tailwind-merge": "^3.6.0",
     "zod": "^4.1.11",
     "zustand": "^5.0.8"
   },

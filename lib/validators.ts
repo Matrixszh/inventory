@@ -9,7 +9,7 @@ export const inventorySchema = z.object({
   name: z.string().min(2, "Item name is required."),
   sku: z.string().min(2, "SKU is required."),
   categoryId: z.string().min(1, "Select a category."),
-  supplierId: z.string().min(1, "Select a supplier."),
+  supplierName: z.string().min(1, "Supplier is required."),
   unit: z.string().min(1, "Unit is required."),
   currentStock: z.coerce.number().min(0, "Stock cannot be negative."),
   minStockLevel: z.coerce.number().min(0, "Minimum stock cannot be negative."),

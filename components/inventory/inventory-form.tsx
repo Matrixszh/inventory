@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { inventorySchema, type InventoryValues } from "@/lib/validators";
-import { saveCategory, saveInventoryItem, uploadInventoryImage } from "@/lib/firestore";
+import { saveCategory, saveInventoryItem, saveSupplier, uploadInventoryImage } from "@/lib/firestore";
 import type { Category, InventoryItem, Supplier } from "@/types";
 
 interface InventoryFormProps {
@@ -42,7 +42,7 @@ export function InventoryForm({
       name: item?.name ?? "",
       sku: item?.sku ?? "",
       categoryId: item?.categoryId ?? "",
-      supplierId: item?.supplierId ?? "",
+      supplierName: suppliers.find((supplier) => supplier.id === item?.supplierId)?.name ?? "",
       unit: item?.unit ?? "pcs",
       currentStock: item?.currentStock ?? 0,
       minStockLevel: item?.minStockLevel ?? 0,
@@ -120,9 +120,42 @@ export function InventoryForm({
   const submit = form.handleSubmit(async (values) => {
     try {
       setFormError(null);
+      const trimmedSupplierName = values.supplierName.trim();
+      const matchedSupplier = suppliers.find(
+        (supplier) => supplier.name.trim().toLowerCase() === trimmedSupplierName.toLowerCase(),
+      );
+
+      const supplierId =
+        matchedSupplier?.id ??
+        (await saveSupplier(
+          {
+            name: trimmedSupplierName,
+            contactEmail: "",
+            phone: "",
+            address: "",
+          },
+          currentUserId,
+        ));
+
+      if (!matchedSupplier) {
+        const nextSuppliers = [
+          ...suppliers,
+          {
+            id: supplierId,
+            name: trimmedSupplierName,
+            contactEmail: "",
+            phone: "",
+            address: "",
+            createdAt: new Date().toISOString(),
+          },
+        ].sort((left, right) => left.name.localeCompare(right.name));
+        onCatalogUpdate({ suppliers: nextSuppliers });
+      }
+
       await saveInventoryItem(
         {
           ...values,
+          supplierId,
           createdBy: item?.createdBy ?? currentUserId,
         },
         currentUserId,
@@ -167,14 +200,14 @@ export function InventoryForm({
         </label>
         <label className="space-y-2">
           <span className="text-sm text-slate-200">Supplier</span>
-          <Select error={form.formState.errors.supplierId?.message} {...form.register("supplierId")}>
-            <option value="">Select supplier</option>
-            {suppliers.map((supplier) => (
-              <option key={supplier.id} value={supplier.id}>
-                {supplier.name}
-              </option>
-            ))}
-          </Select>
+          <Input
+            placeholder="Type supplier name"
+            error={form.formState.errors.supplierName?.message}
+            {...form.register("supplierName")}
+          />
+          <p className="text-xs text-slate-500">
+            Existing suppliers are matched automatically. A new supplier will be created if needed.
+          </p>
         </label>
         {showCategoryCreate ? (
           <div className="space-y-3 rounded-2xl border border-white/10 bg-[#1A1D27] p-4 md:col-span-2">
