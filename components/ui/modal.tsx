@@ -18,23 +18,23 @@ export function Modal({ open, onOpenChange, title, description, children, classN
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm" />
+        <Dialog.Overlay className="fixed inset-0 z-40 bg-black/60" />
         <Dialog.Content
           className={cn(
-            "fixed left-1/2 top-1/2 z-50 w-[calc(100vw-2rem)] max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-[#1A1D27] p-6 shadow-2xl outline-none",
+            "fixed left-1/2 top-1/2 z-50 w-[calc(100vw-2rem)] max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-lg border border-line bg-surface p-6 shadow-md outline-none duration-150 ease-out data-[state=open]:translate-y-0 data-[state=open]:opacity-100 data-[state=closed]:translate-y-2 data-[state=closed]:opacity-0 dark:shadow-none",
             className,
           )}
         >
-          <div className="mb-6 flex items-start justify-between gap-4">
+          <div className="mb-4 flex items-start justify-between gap-4 border-b border-line pb-4">
             <div>
-              <Dialog.Title className="text-lg font-semibold text-slate-50">{title}</Dialog.Title>
+              <Dialog.Title className="font-display text-lg font-semibold text-primary">{title}</Dialog.Title>
               {description ? (
-                <Dialog.Description className="mt-1 text-sm text-slate-400">
+                <Dialog.Description className="mt-1 text-sm text-secondary">
                   {description}
                 </Dialog.Description>
               ) : null}
             </div>
-            <Dialog.Close className="rounded-lg p-2 text-slate-400 transition hover:bg-white/5 hover:text-slate-50">
+            <Dialog.Close className="inline-flex h-8 w-8 items-center justify-center rounded-md text-secondary transition duration-80 ease-out hover:bg-subtle hover:text-primary">
               <X className="h-4 w-4" />
             </Dialog.Close>
           </div>

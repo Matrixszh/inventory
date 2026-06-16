@@ -71,8 +71,8 @@ export default function UsersPage() {
     <div className="space-y-8">
       <Header title="Users" description="Invite teammates, assign roles, and control account access." />
 
-      <section className="rounded-2xl border border-white/10 bg-[#252836] p-5">
-        <h3 className="mb-4 text-lg font-semibold text-slate-50">Invite User</h3>
+      <section className="rounded-lg border border-line bg-elevated p-5 shadow-sm dark:shadow-none">
+        <h3 className="mb-4 font-display text-lg font-medium text-primary">Invite User</h3>
         <form className="grid gap-4 md:grid-cols-4" onSubmit={submit}>
           <Input placeholder="Full name" error={form.formState.errors.name?.message} {...form.register("name")} />
           <Input placeholder="Email" error={form.formState.errors.email?.message} {...form.register("email")} />
@@ -82,7 +82,7 @@ export default function UsersPage() {
             <option value="MANAGER">Manager</option>
             <option value="ADMIN">Admin</option>
           </Select>
-          <div className="md:col-span-4 flex justify-end">
+          <div className="flex justify-end md:col-span-4">
             <Button type="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? "Inviting..." : "Invite User"}
             </Button>
@@ -98,8 +98,8 @@ export default function UsersPage() {
             header: "Name",
             render: (user) => (
               <div>
-                <p className="font-medium text-slate-50">{user.name}</p>
-                <p className="text-xs text-slate-400">{user.email}</p>
+                <p className="font-medium text-primary">{user.name}</p>
+                <p className="text-xs text-secondary">{user.email}</p>
               </div>
             ),
           },
@@ -120,7 +120,17 @@ export default function UsersPage() {
           {
             key: "status",
             header: "Status",
-            render: (user) => (user.isActive ? "Active" : "Inactive"),
+            render: (user) => (
+              <span
+                className={
+                  user.isActive
+                    ? "inline-flex h-5 items-center rounded-md border border-success/20 bg-success/10 px-2 text-xs font-medium text-success"
+                    : "inline-flex h-5 items-center rounded-md border border-line bg-subtle px-2 text-xs font-medium text-secondary"
+                }
+              >
+                {user.isActive ? "Active" : "Inactive"}
+              </span>
+            ),
           },
           {
             key: "actions",

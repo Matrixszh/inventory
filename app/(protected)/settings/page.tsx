@@ -109,8 +109,8 @@ export default function SettingsPage() {
       <Header title="Settings" description="Manage categories, suppliers, and your profile settings." />
 
       <section className="grid gap-6 xl:grid-cols-2">
-        <div className="rounded-2xl border border-white/10 bg-[#252836] p-5">
-          <h3 className="mb-4 text-lg font-semibold text-slate-50">Categories</h3>
+        <div className="rounded-lg border border-line bg-elevated p-5 shadow-sm dark:shadow-none">
+          <h3 className="mb-4 font-display text-lg font-medium text-primary">Categories</h3>
           <form className="space-y-4" onSubmit={submitCategory}>
             <Input placeholder="Category name" error={categoryForm.formState.errors.name?.message} {...categoryForm.register("name")} />
             <Textarea placeholder="Description" error={categoryForm.formState.errors.description?.message} {...categoryForm.register("description")} />
@@ -120,8 +120,8 @@ export default function SettingsPage() {
           </form>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-[#252836] p-5">
-          <h3 className="mb-4 text-lg font-semibold text-slate-50">Suppliers</h3>
+        <div className="rounded-lg border border-line bg-elevated p-5 shadow-sm dark:shadow-none">
+          <h3 className="mb-4 font-display text-lg font-medium text-primary">Suppliers</h3>
           <form className="grid gap-4" onSubmit={submitSupplier}>
             <Input placeholder="Supplier name" error={supplierForm.formState.errors.name?.message} {...supplierForm.register("name")} />
             <Input placeholder="Contact email" error={supplierForm.formState.errors.contactEmail?.message} {...supplierForm.register("contactEmail")} />
@@ -179,8 +179,8 @@ export default function SettingsPage() {
         />
       </section>
 
-      <section className="rounded-2xl border border-white/10 bg-[#252836] p-5">
-        <h3 className="mb-4 text-lg font-semibold text-slate-50">Profile Settings</h3>
+      <section className="rounded-lg border border-line bg-elevated p-5 shadow-sm dark:shadow-none">
+        <h3 className="mb-4 font-display text-lg font-medium text-primary">Profile Settings</h3>
         <form className="grid gap-4 md:grid-cols-2" onSubmit={submitProfile}>
           <Input placeholder="Name" error={profileForm.formState.errors.name?.message} {...profileForm.register("name")} />
           <Input
@@ -189,7 +189,7 @@ export default function SettingsPage() {
             error={profileForm.formState.errors.password?.message}
             {...profileForm.register("password")}
           />
-          <div className="md:col-span-2 flex justify-end">
+          <div className="flex justify-end md:col-span-2">
             <Button type="submit">Save Profile</Button>
           </div>
         </form>

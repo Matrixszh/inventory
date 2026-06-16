@@ -91,7 +91,7 @@ export default function InventoryPage() {
         description="Search, filter, export, and manage the full inventory catalog."
       />
 
-      <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-[#252836] p-5 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-4 rounded-lg border border-line bg-elevated p-5 shadow-sm dark:shadow-none md:flex-row md:items-center md:justify-between">
         <div className="grid gap-3 md:grid-cols-4">
           <Input
             placeholder="Search items, SKU, location"
@@ -148,18 +148,18 @@ export default function InventoryPage() {
             key: "image",
             header: "Image",
             render: (item) => (
-              <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl bg-[#1A1D27]">
+              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-md border border-line bg-subtle">
                 {item.imageUrl ? (
                   <Image
                     src={item.imageUrl}
                     alt={item.name}
-                    width={56}
-                    height={56}
-                    className="h-14 w-14 object-cover"
+                    width={48}
+                    height={48}
+                    className="h-12 w-12 object-cover"
                     unoptimized
                   />
                 ) : (
-                  <span className="text-[10px] uppercase tracking-wide text-slate-500">No image</span>
+                  <span className="text-[11px] text-muted">None</span>
                 )}
               </div>
             ),
@@ -169,10 +169,10 @@ export default function InventoryPage() {
             header: "Item",
             render: (item) => (
               <div>
-                <Link href={`/inventory/${item.id}`} className="font-semibold text-slate-50 hover:text-indigo-400">
+                <Link href={`/inventory/${item.id}`} className="font-medium text-primary transition duration-80 ease-out hover:text-accent">
                   {item.name}
                 </Link>
-                <p className="text-xs text-slate-400">{item.sku}</p>
+                <p className="font-mono text-xs text-muted">{item.sku}</p>
               </div>
             ),
           },
@@ -190,8 +190,10 @@ export default function InventoryPage() {
             key: "stock",
             header: "Stock",
             render: (item) => (
-              <div className="space-y-2">
-                <p>{item.currentStock} {item.unit}</p>
+              <div className="space-y-1">
+                <p className="font-mono text-sm text-primary">
+                  {item.currentStock} {item.unit}
+                </p>
                 <StockBadge item={item} />
               </div>
             ),
@@ -205,20 +207,21 @@ export default function InventoryPage() {
             key: "actions",
             header: "Actions",
             render: (item) => (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap justify-end gap-1 opacity-0 transition duration-80 ease-out group-hover:opacity-100">
                 {(user?.role === "ADMIN" || user?.role === "MANAGER") && (
                   <>
-                    <Button variant="secondary" onClick={() => openStockModal(item, "IN")}>
+                    <Button variant="ghost" className="h-8 w-8 px-0" onClick={() => openStockModal(item, "IN")}>
                       <Plus className="h-4 w-4" />
                     </Button>
-                    <Button variant="secondary" onClick={() => openStockModal(item, "OUT")}>
+                    <Button variant="ghost" className="h-8 w-8 px-0" onClick={() => openStockModal(item, "OUT")}>
                       <Minus className="h-4 w-4" />
                     </Button>
                   </>
                 )}
                 {(user?.role === "ADMIN" || user?.role === "MANAGER") && (
                   <Button
-                    variant="secondary"
+                    variant="ghost"
+                    className="h-8 w-8 px-0"
                     onClick={() => {
                       setSelectedItem(item);
                       setModalOpen(true);
@@ -228,7 +231,7 @@ export default function InventoryPage() {
                   </Button>
                 )}
                 {user?.role === "ADMIN" && (
-                  <Button variant="danger" onClick={() => void handleDelete(item)}>
+                  <Button variant="danger" className="h-8 w-8 px-0" onClick={() => void handleDelete(item)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 )}

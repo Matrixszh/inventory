@@ -2,7 +2,7 @@
 import { cn } from "@/lib/utils";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { IconMenu2, IconX } from "@tabler/icons-react";
+import { Menu, X } from "lucide-react";
 
 interface Links {
   label: string;
@@ -88,7 +88,7 @@ export const DesktopSidebar = ({
     <>
       <motion.div
         className={cn(
-          "h-full px-4 py-4 hidden  md:flex md:flex-col bg-neutral-100 dark:bg-neutral-800 w-[300px] shrink-0",
+          "hidden h-full shrink-0 border-r border-line bg-surface px-4 py-4 md:flex md:flex-col",
           className
         )}
         animate={{
@@ -114,13 +114,13 @@ export const MobileSidebar = ({
     <>
       <div
         className={cn(
-          "h-10 px-4 py-4 flex flex-row md:hidden  items-center justify-between bg-neutral-100 dark:bg-neutral-800 w-full"
+          "flex h-12 w-full flex-row items-center justify-between border-b border-line bg-surface px-4 md:hidden"
         )}
         {...props}
       >
         <div className="flex justify-end z-20 w-full">
-          <IconMenu2
-            className="text-neutral-800 dark:text-neutral-200"
+          <Menu
+            className="h-4 w-4 stroke-[1.5] text-secondary"
             onClick={() => setOpen(!open)}
           />
         </div>
@@ -131,19 +131,19 @@ export const MobileSidebar = ({
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: "-100%", opacity: 0 }}
               transition={{
-                duration: 0.3,
-                ease: "easeInOut",
+                duration: 0.18,
+                ease: "easeOut",
               }}
               className={cn(
-                "fixed h-full w-full inset-0 bg-white dark:bg-neutral-900 p-10 z-[100] flex flex-col justify-between",
+                "fixed inset-0 z-[100] flex h-full w-full flex-col justify-between bg-surface p-6",
                 className
               )}
             >
               <div
-                className="absolute right-10 top-10 z-50 text-neutral-800 dark:text-neutral-200"
+                className="absolute right-6 top-6 z-50 text-secondary"
                 onClick={() => setOpen(!open)}
               >
-                <IconX />
+                <X className="h-4 w-4 stroke-[1.5]" />
               </div>
               {children}
             </motion.div>
@@ -179,7 +179,7 @@ export const SidebarLink = ({
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="text-neutral-700 dark:text-neutral-200 text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+        className="inline-block whitespace-pre !m-0 !p-0 text-sm text-secondary transition duration-150 ease-out group-hover/sidebar:translate-x-1 group-hover/sidebar:text-primary"
       >
         {link.label}
       </motion.span>

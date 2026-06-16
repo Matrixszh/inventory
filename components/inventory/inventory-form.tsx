@@ -171,19 +171,19 @@ export function InventoryForm({
     <form className="space-y-4" onSubmit={submit}>
       <div className="grid gap-4 md:grid-cols-2">
         <label className="space-y-2">
-          <span className="text-sm text-slate-200">Item name</span>
+          <span className="text-xs font-medium uppercase tracking-[0.02em] text-muted">Item name</span>
           <Input error={form.formState.errors.name?.message} {...form.register("name")} />
         </label>
         <label className="space-y-2">
-          <span className="text-sm text-slate-200">SKU</span>
+          <span className="text-xs font-medium uppercase tracking-[0.02em] text-muted">SKU</span>
           <Input error={form.formState.errors.sku?.message} {...form.register("sku")} />
         </label>
         <label className="space-y-2">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-sm text-slate-200">Category</span>
+            <span className="text-xs font-medium uppercase tracking-[0.02em] text-muted">Category</span>
             <button
               type="button"
-              className="text-xs font-medium text-indigo-400 hover:text-indigo-300"
+              className="text-xs font-medium text-accent transition duration-80 ease-out hover:text-accent-hover"
               onClick={() => setShowCategoryCreate((current) => !current)}
             >
               {showCategoryCreate ? "Cancel" : "Create category"}
@@ -199,21 +199,21 @@ export function InventoryForm({
           </Select>
         </label>
         <label className="space-y-2">
-          <span className="text-sm text-slate-200">Supplier</span>
+          <span className="text-xs font-medium uppercase tracking-[0.02em] text-muted">Supplier</span>
           <Input
             placeholder="Type supplier name"
             error={form.formState.errors.supplierName?.message}
             {...form.register("supplierName")}
           />
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted">
             Existing suppliers are matched automatically. A new supplier will be created if needed.
           </p>
         </label>
         {showCategoryCreate ? (
-          <div className="space-y-3 rounded-2xl border border-white/10 bg-[#1A1D27] p-4 md:col-span-2">
+          <div className="space-y-3 rounded-lg border border-line bg-subtle p-4 md:col-span-2">
             <div>
-              <p className="text-sm font-medium text-slate-100">Create category</p>
-              <p className="text-xs text-slate-500">Add a category here and it will be selected automatically.</p>
+              <p className="text-sm font-medium text-primary">Create category</p>
+              <p className="text-xs text-muted">Add a category here and it will be selected automatically.</p>
             </div>
             <div className="grid gap-3 md:grid-cols-2">
               <Input
@@ -229,7 +229,7 @@ export function InventoryForm({
               />
             </div>
             {categoryCreateError ? (
-              <p className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-300">
+              <p className="rounded-md border border-danger/20 bg-danger/10 px-3 py-2 text-sm text-danger">
                 {categoryCreateError}
               </p>
             ) : null}
@@ -241,46 +241,46 @@ export function InventoryForm({
           </div>
         ) : null}
         <label className="space-y-2">
-          <span className="text-sm text-slate-200">Unit</span>
+          <span className="text-xs font-medium uppercase tracking-[0.02em] text-muted">Unit</span>
           <Input error={form.formState.errors.unit?.message} {...form.register("unit")} />
         </label>
         <label className="space-y-2">
-          <span className="text-sm text-slate-200">Location</span>
+          <span className="text-xs font-medium uppercase tracking-[0.02em] text-muted">Location</span>
           <Input error={form.formState.errors.location?.message} {...form.register("location")} />
         </label>
         <label className="space-y-2">
-          <span className="text-sm text-slate-200">Current stock</span>
+          <span className="text-xs font-medium uppercase tracking-[0.02em] text-muted">Current stock</span>
           <Input type="number" error={form.formState.errors.currentStock?.message} {...form.register("currentStock")} />
         </label>
         <label className="space-y-2">
-          <span className="text-sm text-slate-200">Min stock</span>
+          <span className="text-xs font-medium uppercase tracking-[0.02em] text-muted">Min stock</span>
           <Input type="number" error={form.formState.errors.minStockLevel?.message} {...form.register("minStockLevel")} />
         </label>
         <label className="space-y-2">
-          <span className="text-sm text-slate-200">Max stock</span>
+          <span className="text-xs font-medium uppercase tracking-[0.02em] text-muted">Max stock</span>
           <Input type="number" error={form.formState.errors.maxStockLevel?.message} {...form.register("maxStockLevel")} />
         </label>
         <label className="space-y-2">
-          <span className="text-sm text-slate-200">Cost price</span>
+          <span className="text-xs font-medium uppercase tracking-[0.02em] text-muted">Cost price</span>
           <Input type="number" step="0.01" error={form.formState.errors.costPrice?.message} {...form.register("costPrice")} />
         </label>
         <label className="space-y-2">
-          <span className="text-sm text-slate-200">Selling price</span>
+          <span className="text-xs font-medium uppercase tracking-[0.02em] text-muted">Selling price</span>
           <Input type="number" step="0.01" error={form.formState.errors.sellingPrice?.message} {...form.register("sellingPrice")} />
         </label>
         <label className="space-y-2">
-          <span className="text-sm text-slate-200">Image</span>
+          <span className="text-xs font-medium uppercase tracking-[0.02em] text-muted">Image</span>
           <Input type="file" accept="image/*" onChange={(event) => void handleFileUpload(event.target.files)} />
         </label>
       </div>
 
       {imageUrl ? (
-        <div className="rounded-xl bg-[#252836] p-3 text-xs text-slate-400">
+        <div className="rounded-md border border-line bg-subtle p-3 text-xs text-secondary">
           Uploaded image URL saved.
         </div>
       ) : null}
 
-      {formError ? <p className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-300">{formError}</p> : null}
+      {formError ? <p className="rounded-md border border-danger/20 bg-danger/10 px-3 py-2 text-sm text-danger">{formError}</p> : null}
 
       <div className="flex justify-end">
         <Button type="submit" disabled={form.formState.isSubmitting}>

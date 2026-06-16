@@ -10,23 +10,45 @@ import {
   YAxis,
 } from "recharts";
 
+import { formatCompactNumber, formatNumber } from "@/lib/utils";
 import type { CategoryStockDatum } from "@/types";
 
 export function StockByCategoryChart({ data }: { data: CategoryStockDatum[] }) {
   return (
-    <div className="h-80 rounded-2xl border border-white/10 bg-[#252836] p-5">
-      <h3 className="mb-4 text-lg font-semibold text-slate-50">Stock By Category</h3>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#2f3346" />
-          <XAxis dataKey="categoryName" stroke="#9CA3AF" />
-          <YAxis stroke="#9CA3AF" />
+    <div className="px-1 py-2">
+      <div className="mb-4">
+        <h3 className="font-display text-lg font-medium text-primary">Stock By Category</h3>
+        <p className="mt-1 text-sm text-secondary">Total on-hand quantity grouped by category.</p>
+      </div>
+      <div className="h-[320px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 8, right: 8, left: -12, bottom: 8 }}>
+            <CartesianGrid vertical={false} strokeDasharray="4 4" stroke="var(--border)" />
+            <XAxis
+              dataKey="categoryName"
+              tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+              axisLine={false}
+              tickLine={false}
+              tickFormatter={(value: number) => formatCompactNumber(value)}
+            />
           <Tooltip
-            contentStyle={{ background: "#1A1D27", border: "1px solid #252836", borderRadius: 12 }}
-          />
-          <Bar dataKey="stock" fill="#6366F1" radius={[8, 8, 0, 0]} />
-        </BarChart>
-      </ResponsiveContainer>
+              contentStyle={{
+                background: "var(--bg-elevated)",
+                border: "1px solid var(--border)",
+                borderRadius: 6,
+                boxShadow: "0 4px 16px rgba(0,0,0,0.24)",
+              }}
+              formatter={(value: number) => [formatNumber(value), "Stock"]}
+            />
+            <Bar dataKey="stock" fill="var(--accent)" radius={[6, 6, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

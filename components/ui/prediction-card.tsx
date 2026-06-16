@@ -6,17 +6,20 @@ import type { PredictionResult } from "@/types";
 
 const urgencyStyles = {
   critical: {
-    className: "bg-red-500/15 text-red-400",
+    badgeClassName: "border-danger/20 bg-danger/10 text-danger",
+    barClassName: "bg-danger",
     icon: AlertTriangle,
     label: "Critical",
   },
   soon: {
-    className: "bg-amber-500/15 text-amber-400",
+    badgeClassName: "border-warning/20 bg-warning/10 text-warning",
+    barClassName: "bg-warning",
     icon: Clock3,
     label: "Soon",
   },
   ok: {
-    className: "bg-emerald-500/15 text-emerald-400",
+    badgeClassName: "border-success/20 bg-success/10 text-success",
+    barClassName: "bg-success",
     icon: CheckCircle2,
     label: "OK",
   },
@@ -35,30 +38,35 @@ export function PredictionCard({
   const Icon = urgency.icon;
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#252836] p-5">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h3 className="text-lg font-semibold text-slate-50">{itemName}</h3>
-          <p className="mt-1 text-sm text-slate-400">{prediction.reasoning}</p>
+    <div className="relative overflow-hidden rounded-lg border border-line bg-elevated p-5 shadow-sm dark:shadow-none">
+      <div className={`absolute inset-y-0 right-0 w-[3px] ${urgency.barClassName}`} />
+      <div className="flex items-start justify-between gap-4 pr-4">
+        <div className="min-w-0">
+          <h3 className="truncate text-base font-medium text-primary">{itemName}</h3>
+          <p className="mt-1 font-mono text-xs text-muted">{prediction.itemId}</p>
         </div>
-        <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${urgency.className}`}>
+        <span
+          className={`inline-flex h-5 items-center gap-1 rounded-md border px-2 text-xs font-medium ${urgency.badgeClassName}`}
+        >
           <Icon className="h-3.5 w-3.5" />
           {urgency.label}
         </span>
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Metric label="7d" value={prediction.predictedDemand7d} />
         <Metric label="14d" value={prediction.predictedDemand14d} />
         <Metric label="30d" value={prediction.predictedDemand30d} />
         <Metric label="Reorder" value={prediction.recommendedReorderQty} />
       </div>
 
-      <div className="mt-5 flex items-center justify-between">
-        <p className="text-xs text-slate-500">
-          Safety stock {formatNumber(prediction.safetyStock)} | Daily usage{" "}
-          {formatNumber(prediction.averageDailyConsumption)}
-        </p>
+      <div className="mt-5 flex items-center justify-between gap-3 pr-4">
+        <div className="min-w-0">
+          <p className="text-xs text-secondary">{prediction.reasoning}</p>
+          <p className="mt-2 font-mono text-xs text-muted">
+            Safety {formatNumber(prediction.safetyStock)} | Daily {formatNumber(prediction.averageDailyConsumption)}
+          </p>
+        </div>
         {onReorder ? (
           <Button variant={prediction.urgency === "critical" ? "danger" : "secondary"} onClick={onReorder}>
             Reorder
@@ -71,9 +79,9 @@ export function PredictionCard({
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl bg-[#1A1D27] p-3">
-      <p className="text-xs uppercase tracking-wide text-slate-500">{label}</p>
-      <p className="mt-2 text-xl font-semibold text-slate-50">{formatNumber(value)}</p>
+    <div className="rounded-md border border-line bg-base px-3 py-3 dark:bg-subtle">
+      <p className="text-xs uppercase tracking-[0.02em] text-muted">{label}</p>
+      <p className="mt-2 font-mono text-xl font-semibold text-primary">{formatNumber(value)}</p>
     </div>
   );
 }

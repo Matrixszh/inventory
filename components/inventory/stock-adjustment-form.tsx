@@ -52,15 +52,15 @@ export function StockAdjustmentForm({
   });
 
   return (
-    <form className="space-y-4 rounded-2xl border border-white/10 bg-[#252836] p-5" onSubmit={submit}>
+    <form className="space-y-4 rounded-lg border border-line bg-elevated p-5 shadow-sm dark:shadow-none" onSubmit={submit}>
       <div>
-        <h3 className="text-lg font-semibold text-slate-50">{title}</h3>
-        <p className="text-sm text-slate-400">{description}</p>
+        <h3 className="font-display text-lg font-medium text-primary">{title}</h3>
+        <p className="text-sm text-secondary">{description}</p>
       </div>
       <div className={`grid gap-4 ${hideTypeSelect ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
         {!hideTypeSelect ? (
           <label className="space-y-2">
-            <span className="text-sm text-slate-200">Type</span>
+            <span className="text-xs font-medium uppercase tracking-[0.02em] text-muted">Type</span>
             <Select error={form.formState.errors.type?.message} {...form.register("type")}>
               <option value="IN">IN</option>
               <option value="OUT">OUT</option>
@@ -69,15 +69,15 @@ export function StockAdjustmentForm({
           </label>
         ) : null}
         <label className="space-y-2">
-          <span className="text-sm text-slate-200">Quantity</span>
+          <span className="text-xs font-medium uppercase tracking-[0.02em] text-muted">Quantity</span>
           <Input type="number" error={form.formState.errors.quantity?.message} {...form.register("quantity")} />
         </label>
         <label className="space-y-2">
-          <span className="text-sm text-slate-200">Reason</span>
+          <span className="text-xs font-medium uppercase tracking-[0.02em] text-muted">Reason</span>
           <Input error={form.formState.errors.reason?.message} {...form.register("reason")} />
         </label>
       </div>
-      {error ? <p className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-300">{error}</p> : null}
+      {error ? <p className="rounded-md border border-danger/20 bg-danger/10 px-3 py-2 text-sm text-danger">{error}</p> : null}
       <div className="flex justify-end">
         <Button type="submit" disabled={form.formState.isSubmitting}>
           {form.formState.isSubmitting ? "Saving..." : submitLabel}

@@ -11,10 +11,14 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants: Record<ButtonVariant, string> = {
-  primary: "bg-indigo-500 text-slate-50 hover:bg-indigo-400",
-  secondary: "bg-[#252836] text-slate-100 hover:bg-[#2e3245]",
-  ghost: "bg-transparent text-slate-300 hover:bg-white/5",
-  danger: "bg-red-500 text-white hover:bg-red-400",
+  primary:
+    "bg-accent text-white hover:bg-accent-hover active:scale-[0.98] disabled:hover:bg-accent",
+  secondary:
+    "border border-line bg-transparent text-primary hover:bg-subtle active:scale-[0.98]",
+  ghost:
+    "border border-transparent bg-transparent text-secondary hover:bg-subtle hover:text-primary active:scale-[0.98]",
+  danger:
+    "border border-line bg-transparent text-danger hover:border-danger/30 hover:bg-danger/5 active:scale-[0.98]",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
@@ -26,7 +30,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       type={type}
       className={cn(
-        "inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50",
+        "inline-flex h-9 items-center justify-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium text-primary transition duration-100 ease-out [&_svg]:size-4 [&_svg]:stroke-[1.5] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent",
         variants[variant],
         className,
       )}

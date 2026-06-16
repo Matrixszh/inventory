@@ -28,37 +28,37 @@ export function DataTable<T>({
   onPageChange,
 }: DataTableProps<T>) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#252836]">
-      <div className="flex flex-col gap-4 border-b border-white/10 p-4 md:flex-row md:items-center md:justify-between">
-        <h3 className="text-lg font-semibold text-slate-50">Data Table</h3>
-        {searchSlot}
-      </div>
+    <div className="border-t border-line">
+      {searchSlot ? <div className="flex justify-end py-3">{searchSlot}</div> : null}
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-white/10">
+        <table className="min-w-full">
           <thead>
-            <tr>
+            <tr className="bg-subtle">
               {columns.map((column) => (
                 <th
                   key={column.key}
-                  className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-400"
+                  className="h-10 px-4 text-left text-xs font-medium uppercase tracking-[0.08em] text-muted"
                 >
                   {column.header}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody>
             {data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="px-4 py-10 text-center text-sm text-slate-400">
+                <td
+                  colSpan={columns.length}
+                  className="min-h-[200px] px-4 py-16 text-center text-sm text-secondary"
+                >
                   {emptyMessage}
                 </td>
               </tr>
             ) : (
               data.map((row, rowIndex) => (
-                <tr key={rowIndex} className="hover:bg-white/5">
+                <tr key={rowIndex} className="group border-b border-line transition duration-80 ease-out hover:bg-subtle">
                   {columns.map((column) => (
-                    <td key={column.key} className="px-4 py-4 align-top text-sm text-slate-200">
+                    <td key={column.key} className="h-12 px-4 py-3 align-middle text-sm text-primary">
                       {column.render(row)}
                     </td>
                   ))}
@@ -68,22 +68,28 @@ export function DataTable<T>({
           </tbody>
         </table>
       </div>
-      <div className="flex items-center justify-between border-t border-white/10 p-4">
-        <p className="text-sm text-slate-400">
+      <div className="flex items-center justify-end gap-3 py-3">
+        <p className="text-sm text-secondary">
           Page {page} of {Math.max(totalPages, 1)}
         </p>
-        <div className="flex gap-2">
-          <Button variant="secondary" onClick={() => onPageChange(page - 1)} disabled={page <= 1}>
-            <ChevronLeft className="mr-1 h-4 w-4" />
-            Previous
+        <div className="flex gap-1">
+          <Button
+            variant="ghost"
+            className="h-8 w-8 px-0"
+            onClick={() => onPageChange(page - 1)}
+            disabled={page <= 1}
+            aria-label="Previous page"
+          >
+            <ChevronLeft className="h-4 w-4" />
           </Button>
           <Button
-            variant="secondary"
+            variant="ghost"
+            className="h-8 w-8 px-0"
             onClick={() => onPageChange(page + 1)}
             disabled={page >= totalPages}
+            aria-label="Next page"
           >
-            Next
-            <ChevronRight className="ml-1 h-4 w-4" />
+            <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </div>

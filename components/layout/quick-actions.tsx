@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/authStore";
 
 const buttonClass =
-  "inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold transition";
+  "inline-flex h-9 items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition duration-100 ease-out";
 
 export function QuickActions() {
   const user = useAuthStore((state) => state.user);
@@ -15,20 +15,20 @@ export function QuickActions() {
     <div className="flex flex-wrap gap-3">
       {(user?.role === "ADMIN" || user?.role === "MANAGER") && (
         <>
-          <Link href="/inventory" className={cn(buttonClass, "bg-indigo-500 text-white hover:bg-indigo-400")}>
+          <Link href="/inventory" className={cn(buttonClass, "bg-accent text-white hover:bg-accent-hover")}>
             Add Inventory
           </Link>
-          <Link href="/predictions" className={cn(buttonClass, "bg-[#252836] text-slate-100 hover:bg-[#2e3245]")}>
+          <Link href="/predictions" className={cn(buttonClass, "border border-line text-primary hover:bg-subtle")}>
             View Predictions
           </Link>
         </>
       )}
       {user?.role === "ADMIN" && (
-        <Link href="/users" className={cn(buttonClass, "bg-[#252836] text-slate-100 hover:bg-[#2e3245]")}>
+        <Link href="/users" className={cn(buttonClass, "border border-line text-primary hover:bg-subtle")}>
           Manage Users
         </Link>
       )}
-      <Link href="/analytics" className={cn(buttonClass, "bg-transparent text-slate-300 hover:bg-white/5")}>
+      <Link href="/analytics" className={cn(buttonClass, "text-secondary hover:bg-subtle hover:text-primary")}>
         Open Analytics
       </Link>
     </div>

@@ -17,15 +17,15 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
       <select
         ref={ref}
         className={cn(
-          "w-full rounded-xl border border-white/10 bg-[#1A1D27] px-3 py-2 text-sm text-slate-50 outline-none transition focus:border-indigo-500",
-          error && "border-red-500",
+          "h-9 w-full rounded-md border border-line bg-elevated px-3 text-sm text-primary outline-none focus:border-focus focus:shadow-[0_0_0_3px_rgba(91,106,240,0.12)]",
+          error && "border-danger focus:border-danger focus:shadow-[0_0_0_3px_rgba(192,57,43,0.12)]",
           className,
         )}
         {...props}
       >
         {children}
       </select>
-      {error ? <p className="text-xs text-red-400">{error}</p> : null}
+      {error ? <p className="text-xs font-medium text-danger">{error}</p> : null}
     </div>
   );
 });

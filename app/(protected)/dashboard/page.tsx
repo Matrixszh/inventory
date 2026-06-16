@@ -44,19 +44,23 @@ export default async function DashboardPage() {
           />
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-[#252836] p-5">
+        <section className="rounded-lg border border-line bg-elevated px-6 py-5 shadow-sm dark:shadow-none">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-slate-50">Quick Actions</h3>
-              <p className="text-sm text-slate-400">Actions are automatically filtered by your assigned role.</p>
+              <h3 className="font-display text-lg font-medium text-primary">Quick Actions</h3>
+              <p className="text-sm text-secondary">Actions are automatically filtered by your assigned role.</p>
             </div>
           </div>
           <QuickActions />
         </section>
 
-        <section className="grid gap-6 xl:grid-cols-2">
-          <StockByCategoryChart data={dashboardResult.dashboard.categoryStock} />
-          <MovementTrendChart data={dashboardResult.dashboard.movementTrend} />
+        <section className="space-y-8">
+          <div className="rounded-lg border border-line bg-elevated px-6 py-5 shadow-sm dark:shadow-none">
+            <StockByCategoryChart data={dashboardResult.dashboard.categoryStock} />
+          </div>
+          <div className="rounded-lg border border-line bg-elevated px-6 py-5 shadow-sm dark:shadow-none">
+            <MovementTrendChart data={dashboardResult.dashboard.movementTrend} />
+          </div>
         </section>
       </div>
     );
@@ -65,7 +69,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <Header title="Dashboard" description="Monitor stock health, activity, and operational KPIs in real time." />
-      <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-5 text-sm text-red-200">
+      <div className="rounded-lg border border-danger/20 bg-danger/10 p-5 text-sm text-danger">
         {dashboardResult.error}
       </div>
     </div>

@@ -12,21 +12,49 @@ import {
   YAxis,
 } from "recharts";
 
+import { formatCompactCurrency, formatCompactNumber, formatCurrency, formatNumber } from "@/lib/utils";
+
 export function StockValueAreaChart({ data }: { data: Array<{ date: string; value: number }> }) {
   return (
-    <div className="h-80 rounded-2xl border border-white/10 bg-[#252836] p-5">
-      <h3 className="mb-4 text-lg font-semibold text-slate-50">Stock Value Over Time</h3>
-      <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#2f3346" />
-          <XAxis dataKey="date" stroke="#9CA3AF" />
-          <YAxis stroke="#9CA3AF" />
-          <Tooltip
-            contentStyle={{ background: "#1A1D27", border: "1px solid #252836", borderRadius: 12 }}
+    <div className="px-1 py-2">
+      <div className="mb-5 flex flex-col gap-2">
+        <h3 className="font-display text-lg font-medium text-primary">Stock Value Over Time</h3>
+        <p className="text-sm text-secondary">
+          Full trend view with compact currency labels so larger values stay readable.
+        </p>
+      </div>
+      <div className="h-[28rem] md:h-[34rem]">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data} margin={{ top: 12, right: 18, left: 8, bottom: 12 }}>
+            <CartesianGrid vertical={false} strokeDasharray="4 4" stroke="var(--border)" />
+          <XAxis
+            dataKey="date"
+              axisLine={false}
+              tickLine={false}
+            tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+            minTickGap={32}
           />
-          <Area type="monotone" dataKey="value" stroke="#6366F1" fill="#6366F133" />
-        </AreaChart>
-      </ResponsiveContainer>
+          <YAxis
+              axisLine={false}
+              tickLine={false}
+            tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+            tickFormatter={(value: number) => formatCompactCurrency(value)}
+            width={92}
+          />
+          <Tooltip
+            contentStyle={{
+              background: "var(--bg-elevated)",
+              border: "1px solid var(--border)",
+              borderRadius: 6,
+              boxShadow: "0 4px 16px rgba(0,0,0,0.24)",
+            }}
+            formatter={(value: number) => [formatCurrency(value), "Stock Value"]}
+            labelFormatter={(label: string) => `Date: ${label}`}
+          />
+            <Area type="monotone" dataKey="value" stroke="var(--accent)" fill="color-mix(in srgb, var(--accent) 18%, transparent)" />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
@@ -37,19 +65,46 @@ export function TopMovedItemsChart({
   data: Array<{ itemId: string; itemName: string; movementCount: number }>;
 }) {
   return (
-    <div className="h-80 rounded-2xl border border-white/10 bg-[#252836] p-5">
-      <h3 className="mb-4 text-lg font-semibold text-slate-50">Top 10 Most Moved Items</h3>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} layout="vertical">
-          <CartesianGrid strokeDasharray="3 3" stroke="#2f3346" />
-          <XAxis type="number" stroke="#9CA3AF" />
-          <YAxis dataKey="itemName" type="category" stroke="#9CA3AF" width={120} />
-          <Tooltip
-            contentStyle={{ background: "#1A1D27", border: "1px solid #252836", borderRadius: 12 }}
+    <div className="px-1 py-2">
+      <div className="mb-5 flex flex-col gap-2">
+        <h3 className="font-display text-lg font-medium text-primary">Top 10 Most Moved Items</h3>
+        <p className="text-sm text-secondary">
+          Larger horizontal bars make ranking and movement counts easier to compare.
+        </p>
+      </div>
+      <div className="h-[30rem] md:h-[38rem]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} layout="vertical" margin={{ top: 12, right: 18, left: 24, bottom: 12 }}>
+            <CartesianGrid vertical={false} strokeDasharray="4 4" stroke="var(--border)" />
+          <XAxis
+            type="number"
+              axisLine={false}
+              tickLine={false}
+            tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+            tickFormatter={(value: number) => formatCompactNumber(value)}
           />
-          <Bar dataKey="movementCount" fill="#6366F1" radius={[0, 8, 8, 0]} />
-        </BarChart>
-      </ResponsiveContainer>
+          <YAxis
+            dataKey="itemName"
+            type="category"
+              axisLine={false}
+              tickLine={false}
+            tick={{ fill: "var(--text-secondary)", fontSize: 11 }}
+            width={180}
+            interval={0}
+          />
+          <Tooltip
+            contentStyle={{
+              background: "var(--bg-elevated)",
+              border: "1px solid var(--border)",
+              borderRadius: 6,
+              boxShadow: "0 4px 16px rgba(0,0,0,0.24)",
+            }}
+            formatter={(value: number) => [formatNumber(value), "Movements"]}
+          />
+            <Bar dataKey="movementCount" fill="var(--accent)" radius={[0, 6, 6, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

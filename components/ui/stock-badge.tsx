@@ -2,9 +2,9 @@ import { cn, getStockStatus } from "@/lib/utils";
 import type { InventoryItem } from "@/types";
 
 const styles = {
-  OK: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
-  LOW: "bg-amber-500/15 text-amber-400 border-amber-500/20",
-  OUT: "bg-red-500/15 text-red-400 border-red-500/20",
+  OK: "border-success/20 bg-success/10 text-success",
+  LOW: "border-warning/20 bg-warning/10 text-warning",
+  OUT: "border-danger/20 bg-danger/10 text-danger",
 };
 
 export function StockBadge({
@@ -15,7 +15,7 @@ export function StockBadge({
   const status = getStockStatus(item);
 
   return (
-    <span className={cn("rounded-full border px-3 py-1 text-xs font-semibold", styles[status])}>
+    <span className={cn("inline-flex h-5 items-center rounded-md border px-2 text-xs font-medium", styles[status])}>
       {status === "OK" ? "In Stock" : status === "LOW" ? "Low Stock" : "Out Of Stock"}
     </span>
   );

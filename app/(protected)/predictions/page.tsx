@@ -57,7 +57,7 @@ export default function PredictionsPage() {
         </Button>
       </div>
 
-      <div className="grid gap-4">
+      <div className="grid gap-4 xl:grid-cols-3">
         {predictions.map((prediction) => {
           const item = inventory.find((inventoryItem) => inventoryItem.id === prediction.itemId);
           return (
@@ -69,7 +69,7 @@ export default function PredictionsPage() {
           );
         })}
         {!loading && predictions.length === 0 ? (
-          <div className="rounded-2xl border border-white/10 bg-[#252836] p-5 text-slate-400">
+          <div className="flex min-h-[200px] items-center justify-center rounded-lg border border-line bg-elevated p-5 text-center text-secondary">
             No predictions available yet.
           </div>
         ) : null}
