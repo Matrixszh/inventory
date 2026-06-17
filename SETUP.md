@@ -56,6 +56,9 @@ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
 OPENAI_API_KEY=
+AIRTABLE_API_KEY=
+AIRTABLE_BASE_ID=
+AIRTABLE_TABLE_NAME=Customer Orders
 ```
 
 ## 3. Configure Firebase
@@ -175,6 +178,10 @@ If the key is missing:
 - predictions will fall back only where supported by the current code path
 
 ## 9. Run the App
+
+For Airtable CRM setup details, sample records, and troubleshooting, see:
+
+- `AIRTABLE_SETUP.md`
 
 Start the development server:
 

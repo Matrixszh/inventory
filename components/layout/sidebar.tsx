@@ -8,6 +8,7 @@ import {
   BrainCircuit,
   ChevronLeft,
   ChevronRight,
+  ContactRound,
   LayoutDashboard,
   Settings,
   Users,
@@ -28,6 +29,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ["ADMIN", "MANAGER", "VIEWER"] },
   { href: "/inventory", label: "Inventory", icon: Boxes, roles: ["ADMIN", "MANAGER", "VIEWER"] },
+  { href: "/customers", label: "Customers", icon: ContactRound, roles: ["ADMIN", "MANAGER", "VIEWER"] },
   { href: "/predictions", label: "Predictions", icon: BrainCircuit, roles: ["ADMIN", "MANAGER", "VIEWER"] },
   { href: "/analytics", label: "Analytics", icon: BarChart3, roles: ["ADMIN", "MANAGER", "VIEWER"] },
   { href: "/users", label: "Users", icon: Users, roles: ["ADMIN"] },

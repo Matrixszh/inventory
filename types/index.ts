@@ -195,6 +195,15 @@ export interface ChatContextSnapshot {
   >;
 }
 
+export interface CustomerOrderRecord {
+  id: string;
+  createdTime: string;
+  customerName: string;
+  customerContactNumber: string;
+  orderIdentifier: string;
+  orderedProductDetails: string;
+}
+
 export interface ExportPayload {
   fileName: string;
   mimeType: string;
