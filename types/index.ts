@@ -164,9 +164,35 @@ export interface ChatContextSnapshot {
   lowStockItems: Array<Pick<InventoryItem, "id" | "name" | "sku" | "currentStock" | "minStockLevel">>;
   todaysMovementCount: number;
   totalSkuCount: number;
-  recentMovements: Array<Pick<StockMovement, "id" | "inventoryId" | "type" | "quantity" | "timestamp">>;
+  totalUnitsOnHand: number;
+  totalInventoryValue: number;
+  recentMovements: Array<
+    Pick<StockMovement, "id" | "inventoryId" | "type" | "quantity" | "timestamp" | "reason" | "newStock"> & {
+      itemName: string;
+      sku: string;
+    }
+  >;
   predictions: PredictionResult[];
-  inventoryLookup: Array<Pick<InventoryItem, "id" | "name" | "sku" | "currentStock">>;
+  inventoryLookup: Array<
+    Pick<
+      InventoryItem,
+      | "id"
+      | "name"
+      | "sku"
+      | "currentStock"
+      | "minStockLevel"
+      | "maxStockLevel"
+      | "unit"
+      | "location"
+      | "costPrice"
+      | "sellingPrice"
+      | "updatedAt"
+    > & {
+      stockStatus: StockStatus;
+      categoryName: string;
+      supplierName: string;
+    }
+  >;
 }
 
 export interface ExportPayload {

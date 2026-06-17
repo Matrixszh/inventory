@@ -2,7 +2,7 @@
 
 import { Bell, LogOut, Moon, Search, Sun } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import { logoutCurrentUser } from "@/lib/auth";
@@ -12,9 +12,6 @@ import { useAuthStore } from "@/store/authStore";
 export function Header({ title, description }: { title: string; description: string }) {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
-  const [isDark, setIsDark] = useState(
-    () => typeof document !== "undefined" && document.documentElement.classList.contains("dark"),
-  );
 
   const initials = useMemo(() => {
     const source = user?.name?.trim() || "Guest";
@@ -35,7 +32,6 @@ export function Header({ title, description }: { title: string; description: str
     document.documentElement.classList.toggle("dark", nextDark);
     document.documentElement.dataset.theme = nextDark ? "dark" : "light";
     localStorage.setItem("theme", nextDark ? "dark" : "light");
-    setIsDark(nextDark);
   };
 
   return (
@@ -67,11 +63,12 @@ export function Header({ title, description }: { title: string; description: str
 
           <button
             type="button"
-            aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+            aria-label="Toggle theme"
             onClick={toggleTheme}
             className="inline-flex h-8 w-8 items-center justify-center rounded-md text-secondary transition duration-150 ease-out hover:bg-subtle hover:text-primary"
           >
-            {isDark ? <Sun className="h-4 w-4 stroke-[1.5]" /> : <Moon className="h-4 w-4 stroke-[1.5]" />}
+            <Sun className="hidden h-4 w-4 stroke-[1.5] dark:block" />
+            <Moon className="block h-4 w-4 stroke-[1.5] dark:hidden" />
           </button>
 
           <div className="flex items-center gap-2 rounded-md border border-line bg-elevated px-2 py-1">

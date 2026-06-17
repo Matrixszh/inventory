@@ -9,11 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getChatContextSnapshot } from "@/lib/firestore";
 import { formatDateTime, safeJsonParse } from "@/lib/utils";
-import type { ChatContextSnapshot } from "@/types";
 
 export function ChatDrawer() {
   const [open, setOpen] = useState(false);
-  const [snapshot, setSnapshot] = useState<ChatContextSnapshot | null>(null);
   const [input, setInput] = useState("");
   const [timestampLookup, setTimestampLookup] = useState<Record<string, string>>({});
   const timestampLookupRef = useRef<Record<string, string>>({});
@@ -21,11 +19,12 @@ export function ChatDrawer() {
   const { messages, sendMessage, setMessages, status } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
-      body: {
-        snapshot,
-      },
     }),
   });
+
+  const refreshSnapshot = async () => {
+    return getChatContextSnapshot();
+  };
 
   useEffect(() => {
     const storedMessages = safeJsonParse<Array<{ id: string; role: "user" | "assistant" | "system"; createdAt: string; content: string }>>(
@@ -50,8 +49,16 @@ export function ChatDrawer() {
       });
     }
 
-    void getChatContextSnapshot().then(setSnapshot);
+    void getChatContextSnapshot();
   }, [setMessages]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    void getChatContextSnapshot();
+  }, [open]);
 
   useEffect(() => {
     const normalizedMessages = messages
@@ -161,13 +168,14 @@ export function ChatDrawer() {
             </div>
           <form
             className="border-t border-line p-4"
-            onSubmit={(event) => {
+            onSubmit={async (event) => {
               event.preventDefault();
               if (!input.trim()) {
                 return;
               }
 
-              void sendMessage({ text: input });
+              const nextSnapshot = await refreshSnapshot();
+              void sendMessage({ text: input }, { body: { snapshot: nextSnapshot } });
               setInput("");
             }}
           >

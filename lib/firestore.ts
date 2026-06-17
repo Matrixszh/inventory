@@ -590,12 +590,15 @@ export async function getAnalyticsData(): Promise<AnalyticsSnapshot> {
 }
 
 export async function getChatContextSnapshot(): Promise<ChatContextSnapshot> {
-  const [inventory, movements] = await Promise.all([
+  const [inventory, categories, suppliers, movements] = await Promise.all([
     readCollection<InventoryItem>("inventory"),
+    listCategories(),
+    listSuppliers(),
     listRecentStockMovements(10),
   ]);
 
   const today = new Date().toISOString().slice(0, 10);
+  const inventoryById = new Map(inventory.map((item) => [item.id, item]));
 
   return {
     lowStockItems: inventory
@@ -608,14 +611,17 @@ export async function getChatContextSnapshot(): Promise<ChatContextSnapshot> {
         currentStock: item.currentStock,
         minStockLevel: item.minStockLevel,
       })),
+    totalUnitsOnHand: inventory.reduce((sum, item) => sum + item.currentStock, 0),
+    totalInventoryValue: inventory.reduce((sum, item) => sum + item.currentStock * item.costPrice, 0),
     todaysMovementCount: movements.filter((movement) => movement.timestamp.startsWith(today)).length,
     totalSkuCount: inventory.length,
     recentMovements: movements.map((movement) => ({
-      id: movement.id,
-      inventoryId: movement.inventoryId,
-      type: movement.type,
-      quantity: movement.quantity,
-      timestamp: movement.timestamp,
+      ...(movement as Pick<
+        StockMovement,
+        "id" | "inventoryId" | "type" | "quantity" | "timestamp" | "reason" | "newStock"
+      >),
+      itemName: inventoryById.get(movement.inventoryId)?.name ?? "Unknown item",
+      sku: inventoryById.get(movement.inventoryId)?.sku ?? "",
     })),
     predictions: [],
     inventoryLookup: inventory.map((item) => ({
@@ -623,6 +629,16 @@ export async function getChatContextSnapshot(): Promise<ChatContextSnapshot> {
       name: item.name,
       sku: item.sku,
       currentStock: item.currentStock,
+      minStockLevel: item.minStockLevel,
+      maxStockLevel: item.maxStockLevel,
+      unit: item.unit,
+      location: item.location,
+      costPrice: item.costPrice,
+      sellingPrice: item.sellingPrice,
+      updatedAt: item.updatedAt,
+      stockStatus: getStockStatus(item),
+      categoryName: categories.find((category) => category.id === item.categoryId)?.name ?? "Unknown category",
+      supplierName: suppliers.find((supplier) => supplier.id === item.supplierId)?.name ?? "Unknown supplier",
     })),
   };
 }

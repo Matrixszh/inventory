@@ -1,26 +1,22 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { anthropic } from "@ai-sdk/anthropic";
+import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
 
 import type { PredictionInput, PredictionResult, StockMovement } from "@/types";
 
-const DEFAULT_MODEL = "claude-sonnet-4-6";
+const DEFAULT_MODEL = "gpt-4o";
 
-function getAnthropicApiKey() {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+function getOpenAIApiKey() {
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    throw new Error("Missing ANTHROPIC_API_KEY.");
+    throw new Error("Missing OPENAI_API_KEY.");
   }
 
   return apiKey;
 }
 
-export function getAnthropicClient() {
-  return new Anthropic({ apiKey: getAnthropicApiKey() });
-}
-
-export function getAnthropicModel(model = DEFAULT_MODEL) {
-  return anthropic(model);
+export function getAIModel(model = DEFAULT_MODEL) {
+  void getOpenAIApiKey();
+  return openai(model);
 }
 
 function getDemandSamples(movements: StockMovement[]) {
@@ -104,10 +100,33 @@ export function computePredictionBaseline(input: PredictionInput): PredictionRes
   };
 }
 
-export async function generatePredictionsWithClaude(inputs: PredictionInput[]) {
+function parsePredictionResponse(text: string) {
+  const trimmed = text.trim();
+  const fencedMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  const candidate = fencedMatch?.[1] ?? trimmed;
+  const arrayStart = candidate.indexOf("[");
+  const arrayEnd = candidate.lastIndexOf("]");
+  const jsonText =
+    arrayStart >= 0 && arrayEnd >= arrayStart ? candidate.slice(arrayStart, arrayEnd + 1) : candidate;
+
+  return JSON.parse(jsonText) as Array<
+    Pick<
+      PredictionResult,
+      | "itemId"
+      | "predictedDemand7d"
+      | "predictedDemand14d"
+      | "predictedDemand30d"
+      | "recommendedReorderQty"
+      | "urgency"
+      | "reasoning"
+    >
+  >;
+}
+
+export async function generatePredictionsWithAI(inputs: PredictionInput[]) {
   const baselines = inputs.map(computePredictionBaseline);
 
-  if (!process.env.ANTHROPIC_API_KEY) {
+  if (!process.env.OPENAI_API_KEY) {
     return baselines;
   }
 
@@ -130,11 +149,12 @@ export async function generatePredictionsWithClaude(inputs: PredictionInput[]) {
     })),
   }));
 
-  const { text } = await generateText({
-    model: getAnthropicModel(),
-    system:
-      "You are an inventory forecasting assistant. Return JSON only. Use the provided baseline calculations plus historical movement context to produce demand forecasts and reorder recommendations.",
-    prompt: `Return a JSON array with objects shaped exactly like:
+  try {
+    const { text } = await generateText({
+      model: getAIModel(),
+      system:
+        "You are an inventory forecasting assistant. Return JSON only. Use the provided baseline calculations plus historical movement context to produce demand forecasts and reorder recommendations.",
+      prompt: `Return a JSON array with objects shaped exactly like:
 [
   {
     "itemId": "string",
@@ -149,23 +169,16 @@ export async function generatePredictionsWithClaude(inputs: PredictionInput[]) {
 
 Historical context:
 ${JSON.stringify(promptPayload)}`,
-  });
+    });
 
-  const parsed = JSON.parse(text) as Array<
-    Pick<
-      PredictionResult,
-      | "itemId"
-      | "predictedDemand7d"
-      | "predictedDemand14d"
-      | "predictedDemand30d"
-      | "recommendedReorderQty"
-      | "urgency"
-      | "reasoning"
-    >
-  >;
+    const parsed = parsePredictionResponse(text);
 
-  return baselines.map((baseline) => {
-    const aiResult = parsed.find((item) => item.itemId === baseline.itemId);
-    return aiResult ? { ...baseline, ...aiResult } : baseline;
-  });
+    return baselines.map((baseline) => {
+      const aiResult = parsed.find((item) => item.itemId === baseline.itemId);
+      return aiResult ? { ...baseline, ...aiResult } : baseline;
+    });
+  } catch (error) {
+    console.error("Prediction refinement failed, falling back to baseline forecast.", error);
+    return baselines;
+  }
 }

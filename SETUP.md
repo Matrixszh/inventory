@@ -10,7 +10,7 @@ This project uses:
 - TypeScript
 - Tailwind CSS
 - Firebase Auth, Firestore, and Storage
-- Anthropic Claude API
+- OpenAI API (`gpt-4o`)
 - Zustand
 - React Hook Form + Zod
 - Recharts
@@ -22,7 +22,7 @@ Before starting, make sure you have:
 - Node.js 20 or later
 - npm installed
 - A Firebase project
-- An Anthropic API key
+- An OpenAI API key
 
 ## 1. Install Dependencies
 
@@ -55,7 +55,7 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
-ANTHROPIC_API_KEY=
+OPENAI_API_KEY=
 ```
 
 ## 3. Configure Firebase
@@ -156,12 +156,12 @@ If that happens:
 
 This is expected for some filtered inventory, audit, or stock movement views.
 
-## 8. Anthropic Setup
+## 8. OpenAI Setup
 
-Set your Anthropic key in `.env.local`:
+Set your OpenAI key in `.env.local`:
 
 ```env
-ANTHROPIC_API_KEY=your_key_here
+OPENAI_API_KEY=your_key_here
 ```
 
 This key is used only on the server for:
@@ -271,9 +271,9 @@ Create the requested Firestore composite index from the Firebase error link.
 
 Check:
 
-- `ANTHROPIC_API_KEY` is set
+- `OPENAI_API_KEY` is set
 - the key is valid
-- the Anthropic model is available to your account
+- the `gpt-4o` model is available to your account
 
 ### Middleware redirects unexpectedly
 
@@ -296,7 +296,7 @@ After setup, it is recommended to:
 
 ## 15. Important Notes
 
-- The Anthropic API key must never be exposed client-side
+- The OpenAI API key must never be exposed client-side
 - Firebase data mutations are routed through the shared Firestore helper layer
 - The app depends on both Firebase Auth and Firestore role documents
 - This project currently runs on the installed workspace version of Next.js in this repository

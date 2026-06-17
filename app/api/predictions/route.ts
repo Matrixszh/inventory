@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 
-import { generatePredictionsWithClaude } from "@/lib/claude";
+import { generatePredictionsWithAI } from "@/lib/claude";
 import { getPredictionInputs } from "@/lib/firestore";
 
 export async function POST() {
   try {
     const inputs = await getPredictionInputs();
-    const predictions = await generatePredictionsWithClaude(inputs);
+    const predictions = await generatePredictionsWithAI(inputs);
     return NextResponse.json({ predictions });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to generate predictions.";

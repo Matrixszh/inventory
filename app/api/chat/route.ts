@@ -1,8 +1,17 @@
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import Fuse from "fuse.js";
 
-import { getAnthropicModel } from "@/lib/claude";
+import { getAIModel } from "@/lib/claude";
 import type { ChatContextSnapshot } from "@/types";
+
+function matchInventoryItem(message: string, snapshot: ChatContextSnapshot) {
+  const fuse = new Fuse(snapshot.inventoryLookup, {
+    keys: ["name", "sku", "categoryName", "supplierName", "location"],
+    threshold: 0.4,
+  });
+
+  return fuse.search(message)[0]?.item;
+}
 
 function buildSnapshotText(snapshot: ChatContextSnapshot | null) {
   if (!snapshot) {
@@ -11,13 +20,22 @@ function buildSnapshotText(snapshot: ChatContextSnapshot | null) {
 
   return `Context snapshot:
 - Total SKU count: ${snapshot.totalSkuCount}
+- Total units on hand: ${snapshot.totalUnitsOnHand}
+- Total inventory value: ${snapshot.totalInventoryValue}
 - Today's movement count: ${snapshot.todaysMovementCount}
 - Low stock items: ${snapshot.lowStockItems
     .map((item) => `${item.name} (${item.currentStock}/${item.minStockLevel})`)
     .join(", ") || "none"}
 - Recent movements: ${snapshot.recentMovements
-    .map((movement) => `${movement.type} ${movement.quantity} on ${movement.timestamp}`)
-    .join("; ") || "none"}`;
+  .map((movement) => `${movement.itemName} ${movement.type} ${movement.quantity} on ${movement.timestamp}`)
+  .join("; ") || "none"}
+- Sample inventory records: ${snapshot.inventoryLookup
+  .slice(0, 12)
+  .map(
+    (item) =>
+      `${item.name} [${item.sku}] stock ${item.currentStock}${item.unit}, min ${item.minStockLevel}, max ${item.maxStockLevel}, status ${item.stockStatus}, supplier ${item.supplierName}, category ${item.categoryName}, location ${item.location}`,
+  )
+  .join("; ") || "none"}`;
 }
 
 function buildIntentHints(message: string, snapshot: ChatContextSnapshot | null) {
@@ -35,30 +53,47 @@ function buildIntentHints(message: string, snapshot: ChatContextSnapshot | null)
 
   if (normalized.includes("recent activity")) {
     return `Recent activity: ${snapshot.recentMovements
-      .map((movement) => `${movement.type} ${movement.quantity} at ${movement.timestamp}`)
+      .map((movement) => `${movement.itemName} ${movement.type} ${movement.quantity} at ${movement.timestamp}`)
       .join("; ") || "none"}`;
   }
 
-  if (normalized.includes("how much")) {
-    const fuse = new Fuse(snapshot.inventoryLookup, {
-      keys: ["name", "sku"],
-      threshold: 0.4,
-    });
-    const match = fuse.search(message)[0]?.item;
+  if (
+    normalized.includes("how much") ||
+    normalized.includes("stock") ||
+    normalized.includes("quantity") ||
+    normalized.includes("have") ||
+    normalized.includes("inventory")
+  ) {
+    const match = matchInventoryItem(message, snapshot);
     if (match) {
-      return `Matched inventory item: ${match.name} (${match.sku}) currently has ${match.currentStock} units on hand.`;
+      return `Matched inventory item: ${match.name} (${match.sku}) currently has ${match.currentStock} ${match.unit} on hand at ${match.location}. Stock status is ${match.stockStatus}. Min level is ${match.minStockLevel}, max level is ${match.maxStockLevel}, supplier is ${match.supplierName}, and category is ${match.categoryName}.`;
     }
   }
 
-  if (normalized.includes("reorder")) {
-    const fuse = new Fuse(snapshot.inventoryLookup, {
-      keys: ["name", "sku"],
-      threshold: 0.4,
-    });
-    const match = fuse.search(message)[0]?.item;
+  if (normalized.includes("reorder") || normalized.includes("restock")) {
+    const match = matchInventoryItem(message, snapshot);
     const prediction = snapshot.predictions.find((item) => item.itemId === match?.id);
     if (match && prediction) {
       return `Matched item ${match.name}. Recommended reorder quantity is ${prediction.recommendedReorderQty} with urgency ${prediction.urgency}. Reasoning: ${prediction.reasoning}`;
+    }
+
+    if (match) {
+      const shortage = Math.max(0, match.minStockLevel - match.currentStock);
+      return shortage > 0
+        ? `Matched item ${match.name}. It is below minimum stock by ${shortage} ${match.unit}. Supplier is ${match.supplierName}, location is ${match.location}, and current stock is ${match.currentStock} ${match.unit}.`
+        : `Matched item ${match.name}. It is not currently below minimum stock. Current stock is ${match.currentStock} ${match.unit}, minimum is ${match.minStockLevel}, and supplier is ${match.supplierName}.`;
+    }
+  }
+
+  if (
+    normalized.includes("supplier") ||
+    normalized.includes("category") ||
+    normalized.includes("location") ||
+    normalized.includes("price")
+  ) {
+    const match = matchInventoryItem(message, snapshot);
+    if (match) {
+      return `Matched item ${match.name}. SKU ${match.sku}, supplier ${match.supplierName}, category ${match.categoryName}, location ${match.location}, cost price ${match.costPrice}, selling price ${match.sellingPrice}, updated ${match.updatedAt}.`;
     }
   }
 
@@ -77,8 +112,8 @@ export async function POST(request: Request) {
     const intentHints = buildIntentHints(latestMessage, snapshot);
 
     const result = streamText({
-      model: getAnthropicModel(),
-      system: `You are StockBot, an assistant for this inventory management system. You can answer questions about inventory levels, stock movements, low stock alerts, and predictions. Be concise and data-driven.
+      model: getAIModel(),
+      system: `You are StockBot, an assistant for this inventory management system. You can answer questions about inventory levels, item records, stock movements, suppliers, locations, pricing, low stock alerts, and predictions. Be concise and data-driven. Base answers on the provided Firebase snapshot data and say when information is missing instead of inventing it.
 
 ${buildSnapshotText(snapshot)}
 
